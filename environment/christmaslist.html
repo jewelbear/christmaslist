@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas List For Eve</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f8f8f8;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px 0;
+            color: #34495e;
+        }
+
+        input {
+            padding: 8px;
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #95a5a6;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #ecf0f1;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-size: 18px;
+            color: #2c3e50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delete-button {
+            background-color: #e74c3c;
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .delete-button:hover {
+            background-color: #c0392b;
+        }
+
+        hr {
+            border: 1px solid #bdc3c7;
+            margin: 20px 0;
+        }
+
+        h2 {
+            color: #3498db;
+        }
+
+        .links {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .links a {
+            display: block;
+            margin-bottom: 10px;
+            color: #3498db;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Christmas List For Evie</h1>
+
+<label for="item">Item:</label>
+<input type="text" id="item" placeholder="Enter item name">
+
+<label for="quantity">Quantity:</label>
+<input type="number" id="quantity" value="1" min="1">
+
+<label for="link">Link (optional):</label>
+<input type="text" id="link" placeholder="Enter a link associated with the item">
+
+<button onclick="addItem()">Add to List</button>
+<button onclick="displayList()">Display List</button>
+
+<ul id="list"></ul>
+
+<hr>
+
+<h2>Useful Links</h2>
+<div class="links">
+    <a href="https://www.example.com" target="_blank">Example Website</a>
+    <!-- Add more links as needed -->
+</div>
+
+<script>
+    let christmasList = {};
+
+    // Load the Christmas list from local storage
+    if (localStorage.getItem('christmasList')) {
+        christmasList = JSON.parse(localStorage.getItem('christmasList'));
+    }
+
+    function addItem() {
+        let item = document.getElementById('item').value.trim();
+        let quantity = parseInt(document.getElementById('quantity').value);
+        let link = document.getElementById('link').value.trim();
+
+        if (item === '' || isNaN(quantity) || quantity <= 0) {
+            alert('Please enter a valid item and quantity.');
+            return;
+        }
+
+        if (christmasList[item]) {
+            christmasList[item].quantity += quantity;
+        } else {
+            christmasList[item] = {
+                quantity: quantity,
+                link: link || null
+            };
+        }
+
+        alert(`${quantity} ${item}(s) added to the list.`);
+        saveToLocalStorage();
+        clearInputs();
+    }
+
+    function displayList() {
+        let listContainer = document.getElementById('list');
+        listContainer.innerHTML = '<strong>Christmas List:</strong>';
+
+        for (let item in christmasList) {
+            let listItem = document.createElement('li');
+            let link = christmasList[item].link ? `<a href="${christmasList[item].link}" target="_blank">${item}</a>` : item;
+            listItem.innerHTML = `
+                <span>${link}: ${christmasList[item].quantity}</span>
+                <button class="delete-button" onclick="deleteItem('${item}')">Delete</button>
+            `;
+            listContainer.appendChild(listItem);
+        }
+    }
+
+    function deleteItem(item) {
+        if (confirm(`Are you sure you want to delete ${item}?`)) {
+            delete christmasList[item];
+            saveToLocalStorage();
+            displayList();
+        }
+    }
+
+    function clearInputs() {
+        document.getElementById('item').value = '';
+        document.getElementById('quantity').value = 1;
+        document.getElementById('link').value = '';
+    }
+
+    function saveToLocalStorage() {
+        localStorage.setItem('christmasList', JSON.stringify(christmasList));
+    }
+</script>
+
+</body>
+</html>
